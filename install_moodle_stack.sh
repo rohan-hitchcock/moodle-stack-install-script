@@ -3,7 +3,6 @@
 # Exit on any error
 set -e
 
-# Function to prompt for required information
 get_user_input() {
     echo "Please provide the following information:"
     read -p "MySQL password for moodleuser: " MYSQL_PASSWORD
@@ -25,14 +24,21 @@ get_user_input() {
     fi
 }
 
-# Function to check if command exists
-command_exists() {
-    command -v "$1" >/dev/null 2>&1
-}
-
 # Check if running as root
 if [ "$EUID" -ne 0 ]; then 
     echo "Please run as root (use sudo)"
+    exit 1
+fi
+
+# Security warning
+echo "WARNING: This script sets insecure file permissions that are suitable only for"
+echo "development and testing purposes. These permissions should NEVER be used on"
+echo "production systems or machines accessible from the internet."
+echo ""
+echo "Type 'Yes, I understand' to continue:"
+read -r CONFIRM
+if [[ "$CONFIRM" != "Yes, I understand" ]]; then
+    echo "Installation cancelled"
     exit 1
 fi
 
@@ -41,11 +47,9 @@ get_user_input
 
 echo "Starting installation..."
 
-# Update system packages
 echo "Updating system packages..."
 apt update && apt upgrade -y
 
-# Install LAMP server and required PHP extensions
 echo "Installing LAMP server and PHP extensions..."
 apt install -y lamp-server^ php-curl php-gd php-intl php-mbstring php-soap php-zip php-xml php-yaml unzip wget git
 
@@ -58,7 +62,6 @@ sed -i 's/;max_input_vars = 1000/max_input_vars = 5000/' /etc/php/$PHP_VERSION/c
 # Create phpinfo page
 # echo "<?php phpinfo();" > /var/www/html/phpinfo.php
 
-# Restart Apache
 systemctl restart apache2
 
 # Create MySQL database and user
@@ -70,13 +73,11 @@ GRANT ALL PRIVILEGES ON moodle.* TO 'moodleuser'@'localhost';
 FLUSH PRIVILEGES;
 EOF
 
-# Download and install Moodle
 echo "Downloading and installing Moodle..."
 git clone -b MOODLE_404_STABLE git://git.moodle.org/moodle.git /var/www/html/moodle
 chown -R www-data /var/www/html
 chmod -R 0777 /var/www/html/moodle
 
-# Create moodledata directory
 echo "Creating moodledata directory..."
 mkdir -p /var/moodledata
 chmod 0777 /var/moodledata
