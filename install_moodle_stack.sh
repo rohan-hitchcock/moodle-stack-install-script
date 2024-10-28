@@ -87,7 +87,7 @@ cd /var/www/html/moodle/admin/cli
 sudo -u www-data /usr/bin/php install.php \
     --wwwroot="$WEB_ADDRESS" \
     --dataroot=/var/moodledata \
-    --dbtype=mariadb \
+    --dbtype=mysqli \
     --dbhost=localhost \
     --dbname=moodle \
     --dbuser=moodleuser \
