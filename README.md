@@ -14,14 +14,13 @@ This script sets highly permissive file permissions (0777) on certain directorie
 ## Prerequisites
 
 - Ubuntu Server 24.04 LTS (fresh installation)
-- Root/sudo access
 - Port forwarding configured to map host port 1080 to guest port 80 (if running in a virtual machine)
 
 ## Installation
 
 1. Clone this repository:
 ```bash
-git clone [repository-url]
+git clone https://github.com/rohan-hitchcock/moodle-stack-install-script.git
 cd moodle-stack-installer
 ```
 
